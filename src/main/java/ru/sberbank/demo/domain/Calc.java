@@ -2,7 +2,7 @@ package ru.sberbank.demo.domain;
 
 import com.jcabi.aspects.Loggable;
 import org.springframework.stereotype.Component;
-import ru.sberbank.demo.SkipArgument;
+import ru.sberbank.demo.SkipParameter;
 
 import java.util.List;
 
@@ -10,8 +10,7 @@ import java.util.List;
 public class Calc {
 
     @Loggable
-    @SkipArgument(skipArgs = 1)
-    public int sum(int a, int b, List<Integer> list) {
+    public int sum(@SkipParameter int a, int b, List<Integer> list) {
         return a + b;
     }
 }

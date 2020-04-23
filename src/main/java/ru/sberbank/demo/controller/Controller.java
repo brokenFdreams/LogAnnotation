@@ -7,7 +7,7 @@ import ru.sberbank.demo.domain.Calc;
 
 @RestController
 public class Controller {
-    private Calc calc;
+    private final Calc calc;
 
     public Controller(Calc calc) {
         this.calc = calc;

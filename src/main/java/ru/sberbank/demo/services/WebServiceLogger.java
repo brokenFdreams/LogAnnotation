@@ -9,16 +9,16 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import ru.sberbank.demo.SkipArgument;
+import ru.sberbank.demo.SkipParameter;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 
 @Aspect
 @Component
 public class WebServiceLogger {
     private final Logger logger = LoggerFactory.getLogger(WebServiceLogger.class);
-
 
     @Around("@annotation(com.jcabi.aspects.Loggable)")
     public Object around(ProceedingJoinPoint point) throws Throwable {
@@ -34,12 +34,11 @@ public class WebServiceLogger {
     private String getArgsToString(ProceedingJoinPoint point) {
         MethodSignature methodSignature = (MethodSignature) point.getSignature();
         Method method = methodSignature.getMethod();
-        SkipArgument skipArgument = method.getAnnotation(SkipArgument.class);
-        Object args[] = point.getArgs();
-        if (skipArgument != null) {
-            for (Integer i:skipArgument.skipArgs()) {
+        Parameter[] parameters = method.getParameters();
+        Object[] args = point.getArgs();
+        for (int i = 0; i < parameters.length; i++) {
+            if (parameters[i].isAnnotationPresent(SkipParameter.class))
                 args[i] = null;
-            }
         }
         return Arrays.toString(args);
     }
