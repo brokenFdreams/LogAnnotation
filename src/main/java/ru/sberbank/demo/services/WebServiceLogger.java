@@ -22,21 +22,36 @@ public class WebServiceLogger {
 
     @Around("@annotation(com.jcabi.aspects.Loggable)")
     public Object around(ProceedingJoinPoint point) throws Throwable {
+        String methodName = ((MethodSignature) point.getSignature()).getMethod().getName();
+        String args = getArgsToString(point);
         Object result = point.proceed();
         String resultToString = result.toString();
-        String args = Arrays.toString(point.getArgs());
-        String methodName = ((MethodSignature) point.getSignature()).getMethod().getName();
 
-        skipArgs(point);
+        log(methodName, args, resultToString, getLoggable(point));
+        return result;
+    }
 
-        Loggable loggable = getLoggable(point);
+    private String getArgsToString(ProceedingJoinPoint point) {
+        MethodSignature methodSignature = (MethodSignature) point.getSignature();
+        Method method = methodSignature.getMethod();
+        SkipArgument skipArgument = method.getAnnotation(SkipArgument.class);
+        Object args[] = point.getArgs();
+        if (skipArgument != null) {
+            for (Integer i:skipArgument.skipArgs()) {
+                args[i] = null;
+            }
+        }
+        return Arrays.toString(args);
+    }
+
+    private void log(String methodName, String args, String result, Loggable loggable) {
         switch (loggable.value()) {
             case Loggable.TRACE:
                 logger.trace(String.format(
                         "method: %s, args: %s, result: %s",
                         methodName,
                         args,
-                        resultToString
+                        result
                 ));
                 break;
             case Loggable.INFO :
@@ -44,7 +59,7 @@ public class WebServiceLogger {
                         "method: %s, args: %s, result: %s",
                         methodName,
                         args,
-                        resultToString
+                        result
                 ));
                 break;
             case Loggable.DEBUG:
@@ -52,7 +67,7 @@ public class WebServiceLogger {
                         "method: %s, args: %s, result: %s",
                         methodName,
                         args,
-                        resultToString
+                        result
                 ));
                 break;
             case Loggable.WARN:
@@ -60,7 +75,7 @@ public class WebServiceLogger {
                         "method: %s, args: %s, result: %s",
                         methodName,
                         args,
-                        resultToString
+                        result
                 ));
                 break;
             case Loggable.ERROR:
@@ -68,19 +83,11 @@ public class WebServiceLogger {
                         "method: %s, args: %s, result: %s",
                         methodName,
                         args,
-                        resultToString
+                        result
                 ));
                 break;
         }
-        return result;
-    }
 
-    private void skipArgs(ProceedingJoinPoint point) {
-        MethodSignature methodSignature = (MethodSignature) point.getSignature();
-        Method method = methodSignature.getMethod();
-        SkipArgument skipArgument = method.getAnnotation(SkipArgument.class);
-        if (skipArgument != null)
-            logger.info(Arrays.toString(skipArgument.skipArgs()));
     }
 
     private Loggable getLoggable(ProceedingJoinPoint point) {

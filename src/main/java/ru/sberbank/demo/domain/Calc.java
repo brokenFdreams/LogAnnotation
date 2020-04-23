@@ -10,7 +10,7 @@ import java.util.List;
 public class Calc {
 
     @Loggable
-    @SkipArgument(skipArgs = 3)
+    @SkipArgument(skipArgs = 1)
     public int sum(int a, int b, List<Integer> list) {
         return a + b;
     }
