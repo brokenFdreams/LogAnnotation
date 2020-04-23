@@ -1,9 +1,9 @@
-package ru.sberbank.demo;
+package ru.sberbank.demo.controller;
 
 import com.sun.tools.javac.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.sberbank.demo.calc.Calc;
+import ru.sberbank.demo.domain.Calc;
 
 @RestController
 public class Controller {
